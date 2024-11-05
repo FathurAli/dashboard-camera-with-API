@@ -1,0 +1,136 @@
+@extends('backend.layouts.master')
+@section('title', 'Proyek')
+@section('content')
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #charts-container>div {
+            position: relative;
+            width: calc(33.33% - 100px);
+            margin-bottom: 20px;
+            border: 3px solid #000000;
+            border-radius: 5px;
+            padding: 10px;
+            top: 20px;
+        }
+
+        /* Untuk memberikan jarak antara setiap tiga chart di bawah */
+        #charts-container>div:nth-child(n+4) {
+            margin-top: 50px; /* Jarak di atas chart */
+        }
+
+        .chart-title {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: bold;
+            padding-bottom: 5px;
+            width: 100%; /* Lebih panjang */
+            text-align: center; /* Tengah */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="charts-container" class="row"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Define chart titles
+        var chartTitles = [
+            'Pelumasan',
+            'Pembersihan Cetakan',
+            'Pemasangan dan fixing baut',
+            'Pengencangan baut',
+            'Pelabelan',
+            'Pembukaan cetakan'
+        ];
+
+        var chartsData = [{
+                series: [44, 55, 13],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+            {
+                series: [30, 40, 60],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+            {
+                series: [30, 40, 60],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+            {
+                series: [30, 40, 60],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+            {
+                series: [30, 40, 60],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+            {
+                series: [30, 40, 60],
+                labels: ['Produktif', 'Semi Produktif', 'Non Produktif'],
+                colors: ['#FF4560', '#FEB019', '#008FFB']
+            },
+        ];
+
+        for (var i = 0; i < chartsData.length; i++) {
+            var chartDiv = document.createElement('div');
+            chartDiv.id = 'chart' + i;
+            chartDiv.className = 'col-lg-4  col-md-6';
+
+            // Add chart title
+            var chartTitle = document.createElement('h6');
+            chartTitle.textContent = chartTitles[i];
+            chartTitle.className = 'chart-title';
+            chartDiv.appendChild(chartTitle);
+
+            document.getElementById('charts-container').appendChild(chartDiv);
+
+            var options = {
+                series: chartsData[i].series,
+                chart: {
+                    width: 350,
+                    type: 'pie',
+                },
+                labels: chartsData[i].labels,
+                dataLabels: {
+                    enabled: true,
+                    position: 'bottom',
+                    offsetY: 5,
+                    textAnchor: 'middle',
+                    dropShadow: {
+                        enabled: false,
+                    }
+                },
+                colors: chartsData[i].colors
+            };
+
+            var chart = new ApexCharts(document.querySelector("#chart" + i), options);
+            chart.render();
+        }
+    </script>
+</body>
+
+@stop
