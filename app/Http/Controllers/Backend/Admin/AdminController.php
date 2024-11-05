@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use View;
 use DB;
+use Laravel\Passport\Exceptions\OAuthServerException;
 
 class AdminController extends Controller
 {
@@ -161,11 +162,47 @@ class AdminController extends Controller
         ], 401);
     }
 
-    public function logout(Request $request) 
+    public function allAdmin()
+    {
+        // Periksa apakah pengguna masih terautentikasi
+        if (!auth('admin')->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token sudah kedaluwarsa atau tidak valid.'
+            ], 401);
+        }
+
+        // Lanjutkan pemrosesan jika token masih valid
+        $can_edit = $can_delete = '';
+        if (!auth()->user()->can('news-edit')) {
+            $can_edit = "style='display:none;'";
+        }
+        if (!auth()->user()->can('news-delete')) {
+            $can_delete = "style='display:none;'";
+        }
+
+        $users = Admin::get();
+
+        return Datatables::of($users)
+            ->addColumn('role', function ($user) {
+                return $user->roles->pluck('name')->implode(',');
+            })
+            ->addColumn('action', function ($users) use ($can_edit, $can_delete) {
+                $html = '<div class="btn-group">';
+                $html .= '<a data-toggle="tooltip" ' . $can_edit . ' id="' . $users->id . '" class="btn btn-xs btn-info mr-1 edit" title="Edit"><i class="fa fa-edit"></i> </a>';
+                $html .= '<a data-toggle="tooltip" ' . $can_delete . ' id="' . $users->id . '" class="btn btn-xs btn-danger delete" title="Delete"><i class="fa fa-trash"></i> </a>';
+                $html .= '</div>';
+                return $html;
+            })
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+    }
+
+
+    public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['status' => 'success', 'message' => 'Logout berhasil']);
     }
-
-    
 }
